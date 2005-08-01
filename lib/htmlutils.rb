@@ -1,8 +1,8 @@
-require 'timezone'
+#require 'timezone'
 #require 'rmagick'
 
 # The methods added to this helper will be available to all templates in the application.
-module SmkHtmlUtils
+module HtmlUtils
 
 	def datetime_select(object, method, options = {})
 		id = "#{object}_#{method}"
@@ -165,15 +165,18 @@ EOC
 		select_html(select_name, day_options, options[:prefix], options[:include_blank], options[:discard_type])
 	end
 
-	def text_and_select_field(label, text_id, select_id, select_data, current_value, options = {})
+	def text_and_select_field(label, object, method, select_data, current_value, options = {})
+		text_id = "#{object}_#{method}"
+		select_id = "select_#{object}_#{method}_box"
+		widget_width = "width: 190px;"
 		if select_data.empty?
 			show_textfield = true
-			text_field_html_options = {}
-			select_css_style = "display:none;margin:0px;padding:0px;"
+			text_field_html_options = {'style' => widget_width}
+			select_css_style = "display:none;margin:0px;padding:0px;#{widget_width}"
 		else
 			show_textfield = false
-			text_field_html_options = {'style' => 'display:none;'}
-			select_css_style = "display:inline;margin:0px;padding:0px;"
+			text_field_html_options = {'style' => "display:none;#{widget_width}"}
+			select_css_style = "display:inline;margin:0px;padding:0px;#{widget_width}"
 		end
 		select_js_code = "AddToCategoryClick('#{text_id}', this);" + options[:select_extra_js].to_s
 		img_js_code = "showOrHide('#{select_id}');showOrHide('#{text_id}');"  + options[:img_extra_js].to_s
@@ -182,17 +185,19 @@ EOC
 			xml.label(:for => text_id) { xml << label.capitalize }
 			xml.br
 			if options[:text_field_type] == "tag"
-				xml << text_field_tag(options[:text_field_name], options[:text_field_value], text_field_html_options)
+				xml << text_field_tag(text_id, options[:text_field_value], text_field_html_options)
 			else
-				xml << text_field(options[:text_field_obj], options[:text_field_method], text_field_html_options)
+				xml << text_field(object, method, text_field_html_options)
 			end
 			xml.span(:id => select_id + '_div') do
 				xml.select(:id => select_id, :name => select_id, :style => select_css_style, :onchange => select_js_code) do
-					xml.option(:value => '') { xml << "Choose a #{label}" }
+					xml.option(:value => '') { xml << "Choose one" } # a #{label}" }
 					xml << options_for_select(select_data, current_value)
 				end
 			end
-			xml.img(:src => "/images/icon-pull-down-arrows.gif", :border => 0, :align => "absmiddle", :onclick => img_js_code)
+			options[:default_img_src] ||= "/images/icon-pull-down-arrows.gif"
+			options[:default_img_alt] ||= "... or click here to add a new one."
+			xml.img(:src => options[:default_img_src], :alt => options[:default_img_alt], :border => 0, :align => "absmiddle", :onclick => img_js_code)
 			xml.span do
 				xml << options[:extra]
 			end if options[:extra]
