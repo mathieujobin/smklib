@@ -113,14 +113,19 @@ EOC
 	end
 
 	def display_error
-		s = ""
-		s += flash.inspect + ' -- ' + @flash.inspect + ' -- ' + @session.inspect
+		s = "
+      <style>
+        .flash { text-align: left; padding: 5px 25px; border: 4px solid blue; margin: 0px auto 20px; display: table; }
+        .flash img { margin-right: 15px; }
+        .flash.error_content { border-color: red; }
+        .flash.notice_content { border-color: green; }
+      </style>
+    "
+		# DEBUG # s += '<pre>' + flash.to_yaml + '<br/> -- ' + @flash.to_yaml + '<br/> -- </pre>'
 
-		#@flash['notice'] = "hahaha"
-		#@flash['alert'] = "hahaha"
 		if @flash['notice']
 			s += '<div class="flash notice_content">'
-			s += img_tag(:src => "/images/button_ok.png")
+			s += img_tag(:src => "/smklib/images/button_ok.png")
 			s += '<span>'
 			s += @flash['notice']
 			s += '</span>'
@@ -128,13 +133,14 @@ EOC
 		end
 		if @flash['alert']
 			s += '<div class="flash error_content">'
-			s += img_tag(:src => "/images/button_cancel.png")
+			s += img_tag(:src => "/smklib/images/button_cancel.png")
 			s += '<span>'
 			s += @flash['alert']
 			s += '</span>'
 			s += '</div>'
 		end
-		return s + '<div>&nbsp;</div>' unless s.empty?
+		s += '<div>&nbsp;</div>' unless s.empty?
+		return s
 	end
 
 	def mailto(text, email)
