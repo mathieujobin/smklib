@@ -38,7 +38,6 @@ end
 
 class ErrorMailer < ActionMailer::Base
 
-	ActionMailer::Base.template_root = "#{RAILS_ROOT}/smklib/app/views/"
 	def snapshot(rcpt, from, exception, trace, session, param, env, sent_on = Time.now)
 		@recipients         = rcpt
 		@from               = from
@@ -54,6 +53,7 @@ class ErrorMailer < ActionMailer::Base
 		@body["param"]      = param
 		@body["env"]        = env
 		content_type "text/html"
+		template_root = "#{RAILS_ROOT}/smklib/app/views/"
 	end
 
 end

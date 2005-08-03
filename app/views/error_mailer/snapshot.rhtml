@@ -26,9 +26,9 @@ p { margin: 0 }
 <tr><td>Agent</td><td><%= @env['HTTP_USER_AGENT']  %></td></tr>
 <% if @session['user'] -%>
 <tr><td>User id</td><td><%= @session['user'].id %></td></tr>
-<tr><td>User name</td><td><%= @session['user'].name %></td></tr>
+<tr><td>User name</td><td><%= @session['user'].fullname %></td></tr>
 <tr><td>User email</td><td><%= @session['user'].email %></td></tr>
-<tr><td>Registered</td><td><%= @session['user'].created_at %></td></tr>
+<tr><td>Registered</td><td><%= @session['user'].ctime %></td></tr>
 <% end -%>
 </table>
 
