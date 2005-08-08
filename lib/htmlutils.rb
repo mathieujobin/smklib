@@ -151,7 +151,7 @@ EOC
 			s += img_tag(:src => "/smklib/images/button_ok.png")
 			s += '<span>'
 			s += @flash['notice']
-			s += '<br/>' + google_conversion_tracker_english if @flash['signup']
+			#s += '<br/>' + google_conversion_tracker_english if @flash['signup']
 			s += '</span>'
 			s += '</div>'
 			s += '<div>&nbsp;</div>' # unless s.empty?
