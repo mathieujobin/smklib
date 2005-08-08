@@ -112,6 +112,29 @@ EOC
 		end
 	end
 
+	def google_conversion_tracker_english
+		'
+		<!-- Google Code for Signup Conversion Page -->
+		<script language="JavaScript" type="text/javascript">
+		<!--
+			var google_conversion_id = 1068909979;
+			var google_conversion_language = "en_US";
+			var google_conversion_format = "2";
+			var google_conversion_color = "0066CC";
+			if (1.0) {
+				var google_conversion_value = 1.0;
+			}
+			var google_conversion_label = "Signup";
+		//-->
+		</script>
+		<script language="JavaScript" src="http://www.googleadservices.com/pagead/conversion.js">
+		</script>
+		<noscript>
+			<img height=1 width=1 border=0 src="http://www.googleadservices.com/pagead/conversion/1068909979/?value=1.0&label=Signup&script=0">
+		</noscript>
+		'
+	end
+
 	def display_error
 		s = "
       <style>
@@ -128,8 +151,10 @@ EOC
 			s += img_tag(:src => "/smklib/images/button_ok.png")
 			s += '<span>'
 			s += @flash['notice']
+			s += '<br/>' + google_conversion_tracker_english if @flash['signup']
 			s += '</span>'
 			s += '</div>'
+			s += '<div>&nbsp;</div>' # unless s.empty?
 		end
 		if @flash['alert']
 			s += '<div class="flash error_content">'
@@ -138,8 +163,8 @@ EOC
 			s += @flash['alert']
 			s += '</span>'
 			s += '</div>'
+			s += '<div>&nbsp;</div>' # unless s.empty?
 		end
-		s += '<div>&nbsp;</div>' unless s.empty?
 		return s
 	end
 
@@ -210,4 +235,60 @@ EOC
 		end
 	end
 
+=begin
+@columns = [
+	{:label => 'Status', :field => 'status', :format => nil},
+	{:label => 'Entered', :field => 'created_time', :format => Proc.new{|d| d.strftime("%Y.%d.%m") } },
+	{:label => 'Modified', :field => 'modified_time', :format => Proc.new{|d| d.strftime("%Y.%d.%m") } },
+	{:label => 'Name', :field => 'fullname', :format => nil},
+	{:label => 'House', :field => 'house', :format => nil},
+	{:label => 'Category', :field => 'category', :format => nil},
+]
+=end
+
+	def sortable_list(xml, table_id, columns, data)
+		xml = Builder::XmlMarkupr.new(:indent=>2, :margin=>4) if xml.nil?
+		xml.table(:id => table_id, :cellpadding => 0, :cellspacing => 0) do
+			xml.tr(:class => 'header') do
+				columns.each { |c|
+					xml.th do
+						xml.a(:href => url_for(:action => 'list', :sort => c[:field], :order => ((@params[:sort] == c[:field] and @params[:order] == 'asc') ? 'desc' : 'asc'))) do
+							xml << c[:label]
+						end
+					end
+				}
+				xml.th(:colspan => 3) { xml << "" }
+			end
+			for inquiry in data
+				xml.tr do # xml.tr(:class => "row #{inquiry['status']}") do
+					columns.each { |c|
+						f = c[:field]
+						if c[:format].nil?
+							xml.td inquiry[f]
+						else
+							xml.td c[:format].call(inquiry[f])
+						end
+					}
+					xml.td { xml << link_to(img_tag('src' => '/images/viewmag.png'), :action => 'show', :id => inquiry) } if false
+					xml.td { xml << link_to(img_tag('src' => '/images/edit.png'), :action => 'edit', :id => inquiry) }
+					xml.td { xml << link_to(img_tag('src' => '/images/trashcan_empty.png'), {:action => 'destroy', :id => inquiry}, :confirm => "Are you sure?") }
+				end
+# 				xml.tr(:class => "row #{inquiry['status']} desc") do
+# 					xml.td(:colspan => columns.size + 3) do
+# 						xml.p do
+# 							unless inquiry['phone'].empty?
+# 								xml << 'Phone: ' + inquiry['phone']
+# 								xml.br
+# 							end
+# 							unless inquiry['email'].empty?
+# 								xml << 'Email: ' + inquiry['email']
+# 								xml.br
+# 							end
+# 							xml << 'Description: ' + inquiry['description'] unless inquiry['description'].empty?
+# 						end
+# 					end
+# 				end
+			end
+		end
+	end
 end
