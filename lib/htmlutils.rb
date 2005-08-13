@@ -4,7 +4,15 @@
 # The methods added to this helper will be available to all templates in the application.
 module HtmlUtils
 
-	def datetime_select(object, method, options = {})
+	def _(str)
+		str
+	end
+
+	#def datetime_select(object, method, start_date=Time.now.strftime("%Y, %m, %d, %H, %M"), options = {})
+	#	datetime_select_popup(object, method, start_date, options)
+	#end
+
+	def datetime_select_popup(object, method, start_date=Time.now.strftime("%Y, %m, %d, %H, %M"), options = {})
 		id = "#{object}_#{method}"
 		# <form action="#" method="get" style="visibility: hidden">
 		# <input type="hidden" name="date" id="f_date_d" />
@@ -22,6 +30,7 @@ module HtmlUtils
         ifFormat       :    "%Y-%m-%d %H:%M",     // format of the input field (even if hidden, this format will be honored)
         displayArea    :    "show_d",       // ID of the span where the date is to be shown
         daFormat       :    "%A, %B %d, %Y [%H:%M]",// format of the displayed date
+				date           :    new Date(#{start_date}),
 				showsTime      :    true,
 				timeFormat     :    "24",
         align          :    "Tl",           // alignment (defaults to "Bl")
@@ -34,6 +43,29 @@ EOC
 		hidden_field(object, method) + code
 	end
 
+	def datetime_select_flat(object, method, options = {})
+		id = "#{object}_#{method}"
+		code = <<EOC
+				<div style="float: right; margin-left: 1em; margin-bottom: 1em;" id="calendar-container"></div>
+				
+				<script type="text/javascript">
+					Calendar.setup(
+						{
+							inputField     :    "#{id}",     // id of the input field
+							ifFormat       :    "%Y-%m-%d %H:%M",     // format of the input field (even if hidden, this format will be honored)
+							showsTime      :    true,
+							timeFormat     :    "24",
+							align          :    "Tl",           // alignment (defaults to "Bl")
+							flat         : "calendar-container", // ID of the parent element
+							flatCallback : dateChanged           // our callback function
+						}
+					);
+				</script>
+EOC
+		hidden_field(object, method) + code
+	end
+
+	
 	def get_img_size(filename)
 		#im = Magick::Image.read(real_filename(filename)).first
 		#return [im.columns, im.rows]
@@ -211,10 +243,20 @@ EOC
 		end
 		select_js_code = "AddToCategoryClick('#{text_id}', this);" + options[:select_extra_js].to_s
 		img_js_code = "showOrHide('#{select_id}');showOrHide('#{text_id}');"  + options[:img_extra_js].to_s
-		xml = Builder::XmlMarkup.new(:indent=>2)
-		xml.p do
-			xml.label(:for => text_id) { xml << label.capitalize }
-			xml.br
+		def field_only_or_not(label_for, label_text, field_only) # , &block)
+			xml = Builder::XmlMarkup.new(:indent=>2)
+			if field_only
+				yield(xml)
+			else
+				xml.p do
+					xml.label(:for => label_for) { xml << label_text }
+					xml.br
+					yield(xml)
+				end
+			end
+		end
+		#raise options[:field_only].inspect
+		field_only_or_not(text_id, label.capitalize, options[:field_only]) do |xml|
 			if options[:text_field_type] == "tag"
 				xml << text_field_tag(text_id, options[:text_field_value], text_field_html_options)
 			else
