@@ -4,6 +4,10 @@
 # The methods added to this helper will be available to all templates in the application.
 module HtmlUtils
 
+	def form_filter(content, action = '')
+		"<form id='my_f' style='display: inline; margin: 0px; padding: 0px;' action='#{action}' method='post'>" + content + '</form>'
+	end
+
 	def _(str)
 		str
 	end
