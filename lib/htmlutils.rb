@@ -180,7 +180,7 @@ EOC
         .flash.notice_content { border-color: green; }
       </style>
     "
-		# DEBUG # s += '<pre>' + flash.to_yaml + '<br/> -- ' + @flash.to_yaml + '<br/> -- </pre>'
+		# s += '<pre>--' + flash.to_yaml + '<br/> -- ' + @flash.to_yaml + '<br/> -- </pre>' if local_request?
 
 		if @flash['notice']
 			s += '<div class="flash notice_content">'
@@ -217,7 +217,8 @@ EOC
 	end
 
 	def select_timezone(object, method)
-		select object, method, Timezone.find_all
+		#select object, method, {Timezone.find_all}, { :include_blank => true }
+		"temporary unavailable"
 	end
 
 	def my_select_day(date, select_name, options = {})

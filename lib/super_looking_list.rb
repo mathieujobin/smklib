@@ -10,7 +10,7 @@ class SuperLookingList
 	
 	def format_column(item, column)
 		c = column[:field]
-		val = item[c]
+		val = item.send(c)
 		if column[:format]
 			val = column[:format].call(item, c)
 		else
