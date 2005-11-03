@@ -17,6 +17,7 @@ p { margin: 0 }
 %>
 <tr><td>Location</td><td><a href='<%= go_url %>'><%= go_url %></a></td></tr>
 <tr><td>Client IP</td><td><%= @env['REMOTE_ADDR'] %><%= (@env['REMOTE_ADDR'] == "24.85.69.203") ? '&nbsp;UberOFFICE' : '' %></td></tr>
+<tr><td>Client IP on Forward</td><td><%= @env['HTTP_X_FORWARDED_FOR'] %><%= (@env['HTTP_X_FORWARDED_FOR'] == "24.85.69.203") ? '&nbsp;UberOFFICE' : '' %></td></tr>
 <tr><td>Date</td><td><%= Time.now %></td></tr>
 <tr><td>Controller</td><td><%= @param.delete('controller') %></td></tr>
 <tr><td>Action</td><td><%= @param.delete('action') %></td></tr>
