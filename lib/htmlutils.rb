@@ -97,7 +97,12 @@ EOC
 #			<div class="div_title">Advertising / Publicit&eacute;</div>
 #			help keep www.justbudget.com alive, click a link!<br/>
 #			aider moi a garder www.justbudget.com en vie, cliquer sur un liens sponsoriser!<br/>
-	def google_ads(orientation)
+	def google_ads(orientation, channel="")
+		if channel == "public"
+			channel = "0967175666"
+		elsif channel == "private"
+			channel = "2002318862"
+		end
 		# justbudget.com
 		if orientation == "horizontal"
 		'
@@ -140,6 +145,26 @@ EOC
 			</script>
 		</div>
 		'
+		elsif orientation == "jusbudget"
+		return <<EOC
+			<script type="text/javascript"><!--
+			google_ad_client = "pub-4887039760095281";
+			google_alternate_color = "FFFFFF";
+			google_ad_width = 120;
+			google_ad_height = 240;
+			google_ad_format = "120x240_as";
+			google_ad_type = "text_image";
+			google_ad_channel ="#{channel}";
+			google_color_border = "000000";
+			google_color_bg = "F0F0F0";
+			google_color_link = "0000FF";
+			google_color_url = "008000";
+			google_color_text = "000000";
+			//--></script>
+			<script type="text/javascript"
+				src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+			</script>
+EOC
 		else
 		'
 		<p>
