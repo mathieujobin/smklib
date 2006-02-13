@@ -34,7 +34,6 @@ module HtmlUtils
         ifFormat       :    "%Y-%m-%d %H:%M",     // format of the input field (even if hidden, this format will be honored)
         displayArea    :    "show_d",       // ID of the span where the date is to be shown
         daFormat       :    "%A, %B %d, %Y [%H:%M]",// format of the displayed date
-				date           :    new Date(#{start_date}),
 				showsTime      :    true,
 				timeFormat     :    "24",
         align          :    "Tl",           // alignment (defaults to "Bl")
@@ -113,8 +112,8 @@ EOC
 			google_ad_height = 90;
 			google_ad_format = "728x90_as";
 			google_ad_channel ="";
-			google_color_border = "578A24";
-			google_color_bg = "CCFF99";
+			google_color_border = "FFFFFF";
+			google_color_bg = "FFFFFF";
 			google_color_link = "00008B";
 			google_color_url = "00008B";
 			google_color_text = "000000";
@@ -145,7 +144,7 @@ EOC
 			</script>
 		</div>
 		'
-		elsif orientation == "jusbudget"
+		elsif orientation == "justbudget"
 		return <<EOC
 			<script type="text/javascript"><!--
 			google_ad_client = "pub-4887039760095281";
