@@ -164,6 +164,22 @@ EOC
 				src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
 			</script>
 EOC
+		elsif orientation == "srosa"
+		return <<EOC
+			<script type="text/javascript"><!--
+			google_ad_client = "pub-4887039760095281";
+			google_ad_width = 120;
+			google_ad_height = 240;
+			google_ad_format = "120x240_as";
+			google_ad_channel ="";
+			google_color_border = "FFFFFF";
+			google_color_bg = "FFFFFF";
+			google_color_link = "086582";
+			google_color_url = "086582";
+			google_color_text = "333333";
+			//--></script> 
+			<script type="text/javascript" src="http://pagead2.googlesyndication.com/pagead/show_ads.js"></script> 
+EOC
 		else
 		'
 		<p>
