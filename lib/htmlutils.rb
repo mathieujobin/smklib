@@ -189,7 +189,10 @@ EOC
 	end
 
 	def google_conversion_tracker_english
+		if @session['signup']
+			@session['signup'] = false
 		'
+		<br/>
 		<!-- Google Code for Signup Conversion Page -->
 		<script language="JavaScript" type="text/javascript">
 		<!--
@@ -209,6 +212,7 @@ EOC
 			<img height=1 width=1 border=0 src="http://www.googleadservices.com/pagead/conversion/1068909979/?value=1.0&label=Signup&script=0">
 		</noscript>
 		'
+		end
 	end
 
 	def display_error
