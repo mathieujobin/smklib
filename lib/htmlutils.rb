@@ -216,7 +216,8 @@ EOC
 	end
 
 	def display_error
-		s = "
+		s = ""
+		css = "
       <style>
         .flash { text-align: left; padding: 5px 25px; border: 4px solid blue; margin: 0px auto 20px; display: table; }
         .flash img { margin-right: 15px; }
@@ -245,6 +246,7 @@ EOC
 			s += '</div>'
 			s += '<div>&nbsp;</div>' # unless s.empty?
 		end
+		s = css + s unless s.empty?
 		return s
 	end
 
