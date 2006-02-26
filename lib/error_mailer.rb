@@ -12,7 +12,7 @@ module ErrorMailerSupport
 	end
 
 	def error_mailer_from
-    'Error Mailer <error@somekool.net>'
+		'Error Mailer <error@somekool.net>'
 	end
 
 	def log_error(exception)
@@ -26,14 +26,19 @@ module ErrorMailerSupport
 		end
 	end
 
+end
+
+class ActionController::Base
 	def rescue_action_in_public(exception) #:doc:
+		#render_text exception.class.to_s
+		#return true
 		case exception.class
-			when RoutingError, UnknownAction then
-				render_text(IO.read(File.join(RAILS_ROOT, 'smklib', 'public', '404.html')), "404 Not Found")
-			where Mysql::Error
-				render_text(IO.read(File.join(RAILS_ROOT, 'smklib', 'public', '500-mysql.html')), "500 Internal Server Error")
-			else
-				render_text(IO.read(File.join(RAILS_ROOT, 'smklib', 'public', '500.html')), "500 Internal Server Error")
+		when ActionController::RoutingError, ActionController::UnknownAction
+			render_text(IO.read(File.join(RAILS_ROOT, 'smklib', 'public', '404.html')), "404 Not Found")
+		when Mysql::Error
+			render_text(IO.read(File.join(RAILS_ROOT, 'smklib', 'public', '500-mysql.html')), "500 Internal Server Error")
+		else
+			render_text(IO.read(File.join(RAILS_ROOT, 'smklib', 'public', '500.html')), "500 Internal Server Error")
 		end
 	end
 end
