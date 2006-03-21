@@ -26,13 +26,13 @@ module HtmlUtils
 <span style="background-color: #ff8; cursor: default;"
          onmouseover="this.style.backgroundColor='#ff0';"
          onmouseout="this.style.backgroundColor='#ff8';"
-         id="show_d">Click to open date &amp; time selector</span>
+         id="span_#{id}">Click to open date &amp; time selector</span>
 
 <script type="text/javascript">
     Calendar.setup({
         inputField     :    "#{id}",     // id of the input field
         ifFormat       :    "%Y-%m-%d %H:%M",     // format of the input field (even if hidden, this format will be honored)
-        displayArea    :    "show_d",       // ID of the span where the date is to be shown
+        displayArea    :    "span_#{id}",       // ID of the span where the date is to be shown
         daFormat       :    "%A, %B %d, %Y [%H:%M]",// format of the displayed date
 				showsTime      :    true,
 				timeFormat     :    "24",
@@ -263,8 +263,7 @@ EOC
 	end
 
 	def select_timezone(object, method)
-		#select object, method, {Timezone.find_all}, { :include_blank => true }
-		"temporary unavailable"
+		select object, method, Timezone.find_all.collect {|p| [ p.first, p.last ] }, { :include_blank => true }
 	end
 
 	def my_select_day(date, select_name, options = {})
