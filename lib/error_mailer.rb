@@ -34,11 +34,11 @@ class ActionController::Base
 		#return true
 		case exception.class
 		when ActionController::RoutingError, ActionController::UnknownAction
-			render_text(IO.read(File.join(RAILS_ROOT, 'smklib', 'public', '404.html')), "404 Not Found")
+			render_text(IO.read(File.join(RAILS_ROOT, 'public', 'smklib', '404.html')), "404 Not Found")
 		when Mysql::Error
-			render_text(IO.read(File.join(RAILS_ROOT, 'smklib', 'public', '500-mysql.html')), "500 Internal Server Error")
+			render_text(IO.read(File.join(RAILS_ROOT, 'public', 'smklib', '500-mysql.html')), "500 Internal Server Error")
 		else
-			render_text(IO.read(File.join(RAILS_ROOT, 'smklib', 'public', '500.html')), "500 Internal Server Error")
+			render_text(IO.read(File.join(RAILS_ROOT, 'public', 'smklib', '500.html')), "500 Internal Server Error")
 		end
 	end
 end
@@ -60,7 +60,7 @@ class ErrorMailer < ActionMailer::Base
 		@body["param"]      = param
 		@body["env"]        = env
 		content_type "text/html"
-		template_root = "#{RAILS_ROOT}/smklib/app/views/"
+		template_root = "#{RAILS_ROOT}/vendor/smklib/app/views/"
 	end
 
 end
