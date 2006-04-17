@@ -4,6 +4,43 @@
 # The methods added to this helper will be available to all templates in the application.
 module HtmlUtils
 
+	def get_file_value(parent, opclass, spname, ref_id=nil)
+		case opclass.to_s
+		when CompanyLogo.to_s
+			parent.company_logo
+		when RealtorPhoto.to_s
+			parent.realtor_photo
+		else
+			raise "fuck you #{opclass.inspect}"
+			ref_id = (opclass.is_a?(RealtorAttachment) ? -1 : nil) if ref_id.nil?
+			opclass.find(:first, :conditions => ["properties_id = ? and htmlname = ?", ref_id, spname])
+		end
+	end
+	
+	def fileinput_field(parent, opclass, spname, nodiv=false, value=nil)
+		value = get_file_value(parent, opclass, spname) if value.nil?
+		id_name = "fileinput_field_#{spname}"
+		if value.kind_of?(opclass) and value[:id].to_i > 0
+			sclass = Inflector.underscore(opclass)
+			case sclass
+			when 'company_logo', 'realtor_photo'
+				url_hash = {:controller => 'realtors', :action => 'kill_picture', :id => parent, :pic_class => sclass}
+			else
+				raise "fuck you too #{opclass.inspect}"
+			end
+			link = link_to_remote('Delete picture', :update => id_name, :url => url_hash, :confirm => 'Are you sure?')
+			h = "<img src='/#{opclass.to_s.downcase.pluralize}/#{value[:id]}_thumb.png' /><br/>#{link}<br/>To replace the picture, you need to delete this one first."
+		else
+			h = "<input type='file' name='#{spname}' />
+			<br/><small>(jpeg, jpg, gif files of up to 3MB in size can be uploaded.)</small>"
+		end
+		if nodiv
+			h
+		else
+			"<div id='#{id_name}'>#{h}</div>"
+		end
+	end
+
 	def form_filter(content, action = '')
 		"<form id='my_f' style='display: inline; margin: 0px; padding: 0px;' action='#{action}' method='post'>" + content + '</form>'
 	end
