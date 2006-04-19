@@ -4,12 +4,30 @@
 # The methods added to this helper will be available to all templates in the application.
 module HtmlUtils
 
+	def google_analytics(code)
+		# code should look like this UA-97533-1
+    if RAILS_ENV == "production" and not(code.to_s.empty?)
+      return <<EOT
+  <script src="http://www.google-analytics.com/urchin.js" type="text/javascript">
+  </script>
+  <script type="text/javascript">
+    _uacct = "#{code}";
+    urchinTracker();
+  </script>
+EOT
+		else
+			""
+    end
+	end
+
 	def get_file_value(parent, opclass, spname, ref_id=nil)
 		case opclass.to_s
 		when CompanyLogo.to_s
 			parent.company_logo
 		when RealtorPhoto.to_s
 			parent.realtor_photo
+		when Photo.to_s,Floorplan.to_s
+			nil
 		else
 			raise "fuck you #{opclass.inspect}"
 			ref_id = (opclass.is_a?(RealtorAttachment) ? -1 : nil) if ref_id.nil?
