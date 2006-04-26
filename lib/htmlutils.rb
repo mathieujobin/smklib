@@ -67,9 +67,10 @@ EOT
 		str
 	end
 
-	#def datetime_select(object, method, start_date=Time.now.strftime("%Y, %m, %d, %H, %M"), options = {})
+	def datetime_select(object, method, start_date=Time.now.strftime("%Y, %m, %d, %H, %M"), options = {})
+		raise "dont use me you bastard."
 	#	datetime_select_popup(object, method, start_date, options)
-	#end
+	end
 
 	def datetime_select_popup(object, method, start_date=Time.now.strftime("%Y, %m, %d, %H, %M"), options = {})
 		id = "#{object}_#{method}"
@@ -373,9 +374,7 @@ EOC
 					xml << options_for_select(select_data, current_value)
 				end
 			end
-			options[:default_img_src] ||= "/images/icon-pull-down-arrows.gif"
-			options[:default_img_alt] ||= "... or click here to add a new one."
-			xml.img(:src => options[:default_img_src], :alt => options[:default_img_alt], :border => 0, :align => "absmiddle", :onclick => img_js_code)
+			xml.input(:type => 'button', :value => '...', :alt => options[:default_img_alt], :border => 0, :align => "absmiddle", :onclick => img_js_code)
 			xml.span do
 				xml << options[:extra]
 			end if options[:extra]
