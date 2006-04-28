@@ -271,7 +271,7 @@ EOC
 		end
 	end
 
-	def display_error
+	def display_errors
 		s = ""
 		css = "
       <style>
@@ -282,22 +282,23 @@ EOC
       </style>
     "
 		# s += '<pre>--' + flash.to_yaml + '<br/> -- ' + @flash.to_yaml + '<br/> -- </pre>' if local_request?
-
-		if @flash['notice']
+		f_n = "#{flash[:notice]}#{flash['notice']}"
+		unless f_n.empty?
 			s += '<div class="flash notice_content">'
 			s += img_tag(:src => "/smklib/images/button_ok.png")
 			s += '<span>'
-			s += @flash['notice']
+			s += f_n
 			#s += '<br/>' + google_conversion_tracker_english if @flash['signup']
 			s += '</span>'
 			s += '</div>'
 			s += '<div>&nbsp;</div>' # unless s.empty?
 		end
-		if @flash['alert']
+		f_a = "#{flash[:warning]}#{flash['warning']}#{flash[:alert]}#{flash['alert']}"
+		unless f_a.empty?
 			s += '<div class="flash error_content">'
 			s += img_tag(:src => "/smklib/images/button_cancel.png")
 			s += '<span>'
-			s += @flash['alert']
+			s += f_a
 			s += '</span>'
 			s += '</div>'
 			s += '<div>&nbsp;</div>' # unless s.empty?
