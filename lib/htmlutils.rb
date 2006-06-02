@@ -418,7 +418,7 @@ EOC
 					}
 					xml.td { xml << link_to(img_tag('src' => '/images/viewmag.png'), :action => 'show', :id => inquiry) } if false
 					xml.td { xml << link_to(img_tag('src' => '/images/edit.png'), :action => 'edit', :id => inquiry) }
-					xml.td { xml << link_to(img_tag('src' => '/images/trashcan_empty.png'), {:action => 'destroy', :id => inquiry}, :confirm => "Are you sure?") }
+					xml.td { xml << link_to(img_tag('src' => '/images/trashcan_empty.png'), {:action => 'destroy', :id => inquiry}, :post => true, :confirm => "Are you sure?") }
 				end
 # 				xml.tr(:class => "row #{inquiry['status']} desc") do
 # 					xml.td(:colspan => columns.size + 3) do
