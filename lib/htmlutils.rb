@@ -22,11 +22,13 @@ EOT
 
 	def get_file_value(parent, opclass, spname, ref_id=nil)
 		case opclass.to_s
-		when CompanyLogo.to_s
+		when 'CompanyLogo'
 			parent.company_logo
-		when RealtorPhoto.to_s
+		when 'RealtorPhoto'
 			parent.realtor_photo
-		when Photo.to_s,Floorplan.to_s
+		when 'ProductPhoto'
+		  parent.product_photo
+		when 'Photo','Floorplan'
 			nil
 		else
 			raise "fuck you #{opclass.inspect}"
@@ -35,7 +37,7 @@ EOT
 		end
 	end
 	
-	def fileinput_field(parent, opclass, spname, nodiv=false, value=nil)
+	def fileinput_field(parent, opclass, spname, nodiv=false, value=nil, lang='en')
 		value = get_file_value(parent, opclass, spname) if value.nil?
 		id_name = "fileinput_field_#{spname}"
 		if value.kind_of?(opclass) and value[:id].to_i > 0
@@ -43,14 +45,25 @@ EOT
 			case sclass
 			when 'company_logo', 'realtor_photo'
 				url_hash = {:controller => 'realtors', :action => 'kill_picture', :id => parent, :pic_class => sclass}
+			when 'product_photo'
+				url_hash = {:controller => 'products', :action => 'kill_picture', :id => parent, :pic_class => sclass}
 			else
 				raise "fuck you too #{opclass.inspect}"
 			end
-			link = link_to_remote('Delete picture', :update => id_name, :url => url_hash, :confirm => 'Are you sure?')
-			h = "<img src='/#{opclass.to_s.downcase.pluralize}/#{value[:id]}_thumb.png' /><br/>#{link}<br/>To replace the picture, you need to delete this one first."
+			if lang=='en'
+			 link_text = 'Delete picture'
+			 confirm_text = 'Are you sure?'
+			 msg_text = 'To replace the picture, you need to delete this one first.'
+			else
+			 link_text = '変更'
+			 confirm_text = '本当ですか？'
+			 msg_text = ''
+			end
+			link = link_to_remote(link_text, :update => id_name, :url => url_hash, :confirm => confirm_text)
+			h = "<img src='/#{opclass.to_s.downcase.pluralize}/#{value[:id]}_thumb.png' /><br/>#{link}<br/>#{msg_text}"
 		else
-			h = "<input type='file' name='#{spname}' />
-			<br/><small>(jpeg, jpg, gif files of up to 3MB in size can be uploaded.)</small>"
+			t = "<br/><small>(jpeg, jpg, gif files of up to 3MB in size can be uploaded.)</small>" if lang=='en'
+			h = "<input type='file' name='#{spname}' />#{t}"
 		end
 		if nodiv
 			h
