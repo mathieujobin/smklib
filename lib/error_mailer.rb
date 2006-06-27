@@ -12,7 +12,7 @@ module ErrorMailerSupport
 	end
 
 	def error_mailer_from
-		'FRES:Error Mailer <error@somekool.net>'
+		'[AppName]:Error Mailer <error@somekool.net>'
 	end
 
 	def log_error(exception)
@@ -20,7 +20,7 @@ module ErrorMailerSupport
 
 		begin
 			ErrorMailer.deliver_snapshot(error_mailer_recipients, error_mailer_from, exception, clean_backtrace(exception),
-				@session.instance_variable_get("@data"), @params, @request.env) unless local_request?
+				session.instance_variable_get("@data"), params, request.env) unless local_request?
 		rescue => e
 			logger.error(e)
 		end
@@ -41,22 +41,23 @@ end
 
 class ErrorMailer < ActionMailer::Base
 
-	def snapshot(rcpt, from, exception, trace, session, param, env, sent_on = Time.now)
+	def snapshot(rcpt, from, exception, trace, p_session, p_params, p_env, sent_on = Time.now)
 		@recipients         = rcpt
 		@from               = from
 		if exception.class.to_s == "ActionController::UnknownAction"
-	    @subject            = "[NotFound] #{exception.class.to_s} in #{env['REQUEST_URI']}" 
+	    @subject            = "[NotFound] #{exception.class.to_s} in #{p_env['REQUEST_URI']}" 
 		else
-	    @subject            = "[Error] #{exception.class.to_s} in #{env['REQUEST_URI']}" 
+	    @subject            = "[Error] #{exception.class.to_s} in #{p_env['REQUEST_URI']}" 
 		end
 		@sent_on            = sent_on
-		@body["exception"]  = exception
-		@body["trace"]      = trace
-		@body["session"]    = session
-		@body["param"]      = param
-		@body["env"]        = env
+		@body["v_exception"]  = exception
+		@body["v_trace"]      = trace
+		@body["v_session"]    = p_session
+		@body["v_params"]      = p_params
+		@body["v_env"]        = p_env
 		content_type "text/html"
-		template_root = "#{RAILS_ROOT}/vendor/smklib/app/views/"
 	end
 
 end
+ErrorMailer.template_root = "#{RAILS_ROOT}/vendor/smklib/app/views"
+
