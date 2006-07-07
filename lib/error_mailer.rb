@@ -59,5 +59,5 @@ class ErrorMailer < ActionMailer::Base
 	end
 
 end
-ErrorMailer.template_root = "#{RAILS_ROOT}/vendor/smklib/app/views"
+#ErrorMailer.template_root = "#{RAILS_ROOT}/vendor/smklib/app/views"
 

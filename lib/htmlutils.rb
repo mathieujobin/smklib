@@ -76,8 +76,12 @@ EOT
 		"<form id='my_f' style='display: inline; margin: 0px; padding: 0px;' action='#{action}' method='post'>" + content + '</form>'
 	end
 
-	def _(str)
-		str
+  begin
+    do_nothing = true if Locale.is_a?(Class)
+  rescue
+    def _(str)
+      str
+    end
 	end
 
 	def datetime_select(object, method, start_date=Time.now.strftime("%Y, %m, %d, %H, %M"), options = {})
