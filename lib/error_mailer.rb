@@ -1,3 +1,10 @@
+module SoftRaise
+	def soft_raise
+		exception = nil
+		ErrorMailer.deliver_snapshot('somekool@somekool.net', 'FRES:Warning Mailer <error@somekool.net>', exception, clean_backtrace(exception), session.instance_variable_get("@data"), params, request.env)
+	end
+end
+
 module ErrorMailerSupport
 
 	#attr_accessor :error_mailer_to
