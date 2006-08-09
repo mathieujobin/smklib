@@ -60,7 +60,7 @@ EOT
 			 msg_text = ''
 			end
 			link = link_to_remote(link_text, :update => id_name, :url => url_hash, :confirm => confirm_text)
-			h = "<img src='/#{opclass.to_s.downcase.pluralize}/#{value[:id]}_thumb.png' /><br/>#{link}<br/>#{msg_text}"
+			h = "<img src='#{value.thumbnail_path}' /><br/>#{link}<br/>#{msg_text}"
 		else
 			t = "<br/><small>(jpeg, jpg, gif files of up to 3MB in size can be uploaded.)</small>" if lang=='en'
 			h = "<input type='file' name='#{spname}' />#{t}"
