@@ -299,7 +299,7 @@ EOC
       </style>
     "
 		# s += '<pre>--' + flash.to_yaml + '<br/> -- ' + @flash.to_yaml + '<br/> -- </pre>' if local_request?
-		f_n = "#{flash[:notice]}#{flash['notice']}"
+		f_n = "#{flash[:notice]}#{flash['notice']}#{flash[:message]}#{flash['message']}"
 		unless f_n.empty?
 			s += '<div class="flash notice_content">'
 			s += img_tag(:src => "/smklib/images/button_ok.png")
