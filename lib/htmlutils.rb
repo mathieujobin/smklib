@@ -2,7 +2,7 @@
 #require 'rmagick'
 
 # The methods added to this helper will be available to all templates in the application.
-module HtmlUtils
+module SMKLib::HtmlUtils
 
 	def google_analytics(code)
 		# code should look like this UA-97533-1
