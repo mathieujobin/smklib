@@ -2,8 +2,10 @@
 #require 'rmagick'
 
 # The methods added to this helper will be available to all templates in the application.
-module SMKLib::HtmlUtils
+module SMKLib
+module HtmlUtils
 
+	# Return valid google analytics Javascript code
 	def google_analytics(code)
 		# code should look like this UA-97533-1
     if RAILS_ENV == "production" and not(code.to_s.empty?)
@@ -355,6 +357,18 @@ EOC
 	def text_and_select_field(label, object, method, select_data, current_value, options = {})
 		text_id = "#{object}_#{method}"
 		select_id = "select_#{object}_#{method}_box"
+		options = {
+			:select_extra_js => '',
+			:img_extra_js => '',
+			:select_js => "AddToCategoryClick('#{text_id}', this);",
+			:img_js => "showOrHide('#{select_id}');showOrHide('#{text_id}');",
+			:field_only => false,
+			:text_field_type => 'magic', # can be 'tag'
+			:text_field_value => '', # used if text_field_type == 'tag'
+			:button_value => '...',
+			:default_img_alt => '', # obsolete, button was and image
+			:extra => nil, # some custom stuff I will add at the end.
+		}.merge(options)
 		widget_width = "width: 190px;"
 		if select_data.empty?
 			show_textfield = true
@@ -365,8 +379,6 @@ EOC
 			text_field_html_options = {'style' => "display:none;#{widget_width}"}
 			select_css_style = "display:inline;margin:0px;padding:0px;#{widget_width}"
 		end
-		select_js_code = "AddToCategoryClick('#{text_id}', this);" + options[:select_extra_js].to_s
-		img_js_code = "showOrHide('#{select_id}');showOrHide('#{text_id}');"  + options[:img_extra_js].to_s
 		def field_only_or_not(label_for, label_text, field_only) # , &block)
 			xml = Builder::XmlMarkup.new(:indent=>2)
 			if field_only
@@ -380,22 +392,23 @@ EOC
 			end
 		end
 		#raise options[:field_only].inspect
-		field_only_or_not(text_id, label.capitalize, options[:field_only]) do |xml|
+		field_only_or_not(text_id, label.to_s.capitalize, options[:field_only]) do |xml|
 			if options[:text_field_type] == "tag"
 				xml << text_field_tag(text_id, options[:text_field_value], text_field_html_options)
 			else
 				xml << text_field(object, method, text_field_html_options)
 			end
 			xml.span(:id => select_id + '_div') do
-				xml.select(:id => select_id, :name => select_id, :style => select_css_style, :onchange => select_js_code) do
-					xml.option(:value => '') { xml << "Choose one" } # a #{label}" }
+				xml.select(:id => select_id, :name => select_id, :style => select_css_style, :onchange => "#{options[:select_js]}#{options[:select_extra_js]}") do
+					xml.option(:value => '') { xml << _("Choose one") } # a #{label}" }
 					xml << options_for_select(select_data, current_value)
 				end
 			end
-			xml.input(:type => 'button', :value => '...', :alt => options[:default_img_alt], :border => 0, :align => "absmiddle", :onclick => img_js_code)
+			xml.input(:type => 'button', :value => options[:button_value], :alt => options[:default_img_alt], :border => 0, :align => "absmiddle", :onclick => "#{options[:img_js]}#{options[:img_extra_js]}")
 			xml.span do
 				xml << options[:extra]
-			end if options[:extra]
+			end unless options[:extra].to_s.empty?
+			xml.target!
 		end
 	end
 
@@ -456,3 +469,5 @@ EOC
 		end
 	end
 end
+end
+
