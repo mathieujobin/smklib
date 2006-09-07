@@ -29,7 +29,9 @@ EOT
 			parent.realtor_photo
 		when 'ProductPhoto'
 		  parent.product_photo
-		when 'Photo','Floorplan'
+		when 'Photo'
+			parent.photo
+		when 'Floorplan'
 			nil
 		else
 			raise "fuck you #{opclass.inspect}"
@@ -42,15 +44,8 @@ EOT
 		value = get_file_value(parent, opclass, spname) if value.nil?
 		id_name = "fileinput_field_#{spname}"
 		if value.kind_of?(opclass) and value[:id].to_i > 0
-			sclass = Inflector.underscore(opclass)
-			case sclass
-			when 'company_logo', 'realtor_photo'
-				url_hash = {:controller => 'realtors', :action => 'kill_picture', :id => parent, :pic_class => sclass}
-			when 'product_photo'
-				url_hash = {:controller => 'products', :action => 'kill_picture', :id => parent, :pic_class => sclass}
-			else
-				raise "fuck you too #{opclass.inspect}"
-			end
+			controller = parent.class.to_s.downcase.pluralize
+			url_hash = {:controller => controller, :action => 'kill_picture', :id => parent, :pic_class => Inflector.underscore(opclass)}
 			if lang=='en'
 			 link_text = 'Delete picture'
 			 confirm_text = 'Are you sure?'
