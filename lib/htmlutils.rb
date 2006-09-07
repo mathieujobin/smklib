@@ -4,7 +4,6 @@
 # The methods added to this helper will be available to all templates in the application.
 module SMKLib
 module HtmlUtils
-
 	# Return valid google analytics Javascript code
 	def google_analytics(code)
 		# code should look like this UA-97533-1
@@ -412,6 +411,58 @@ EOC
 		end
 	end
 
+	def normal_field(xml, object, method, label, type='text_field')
+		xml.p do
+			xml.label(:for => "#{object}_#{method}") do
+				xml << label
+			end
+			xml.br
+			case type
+			when 'text_field'
+				xml << text_field(object, method)
+			when 'text_area'
+				xml << text_area(object, method)
+			when 'in_place_field'
+				xml << in_place_editor_field(object, method)
+			when 'in_place_editor'
+				xml << in_place_editor(object, method)
+			when 'in_place_select_field'
+				xml << in_place_select_field(object, method)
+			when 'other'
+				yield(xml)
+			end
+		end
+	end
+
+	def many_to_many_field(xml, object, method, label, all_values, options={})
+		xml ||= Builder::XmlMarkup.new(:indent=>2)
+		#@controller = (@controller or options[:controller])
+		options = {:item_name => 'name', :m2m_selected => 'm2m_selected'}.merge(options)
+		@object = instance_variable_get("@#{object}")
+		@values = @object.send(method)
+		parent_id = "#{object}_id".to_sym
+		child_id = "#{method.to_s.singularize}_id".to_sym
+		raise @values.inspect unless @values.is_a?(Array)
+		normal_field(xml, object, method, label, 'other') do |xml|
+			xml.div(:class => options[:m2m_selected]) do
+				@values.each do |item|
+					xml.div do
+						xml << item.send(options[:item_name])
+						xml << '&nbsp;'
+						xml << link_to(_('Remove'), url_for(:controller => 'businesses', :action => "remove_#{method.to_s.singularize}_from_#{object}", parent_id => @object[:id], child_id => item[:id]))
+					end
+				end
+			end
+			s = "select_#{object}_#{method}_box"
+			#url = url_for({ :action => "add_#{method.to_s.singularize}_to_#{object}" })
+			#url += "/'+$('#{s}').options[$('#{s}').selectedIndex].value+'/to_#{object}/#{@object[:id]}"
+			#url = url_for({ :action => "add_#{method.singularize}_to_#{object}", parent_id => @object[:id].to_i, child_id => "'+$('#{s}').options[$('#{s}').selectedIndex].value+'", :escape => false })
+			url = url_for({ :action => "add_#{method.singularize}_to_#{object}", parent_id => @object[:id].to_i, child_id => "__js__" })
+			url.gsub!("__js__", "'+$('#{s}').options[$('#{s}').selectedIndex].value+'")
+			xml << text_and_select_field(nil, object, method, all_values, nil, :button_value => _('Add'), :field_only => true, :text_field_type => 'tag', :img_js => "window.location='#{url}';return false;")
+		end
+	end
+
 =begin
 @columns = [
 	{:label => 'Status', :field => 'status', :format => nil},
@@ -471,3 +522,57 @@ EOC
 end
 end
 
+module ActionController
+	module Macros
+		module ManyToMany #:nodoc:
+			def self.append_features(base) #:nodoc:
+				super
+				base.extend(ClassMethods)
+			end
+
+			# Example:
+			#
+			#   # Controller
+			#   class BusinessesController < ApplicationController
+			#     many_to_many_for :business, :subcategories, :label => _('Subcategory'), :m2m_field_options => {:item_name => 'name_with_category'}
+			#   end
+			#
+			#   # View
+			#   xml.div(:id => 'm2m_business_subcategories') do
+			#     many_to_many_field(xml, 'business', 'subcategories', _('Subcategory'), @subcategories, :item_name => 'name_with_category')
+			#   end
+			#
+			module ClassMethods
+				def many_to_many_for(object, attribute, options = {})
+					#include SMKLib::HtmlUtils
+					options = {:max_size => 10, :label => attribute.to_s.capitalize}.merge(options)
+					parent_model, child_model = object.to_s.camelize.constantize, attribute.to_s.singularize.camelize.constantize
+					@controller = self
+
+					define_method("add_#{attribute.to_s.singularize}_to_#{object}") do
+						instance_variable_set("@#{object}", parent_model.find(params[:business_id]))
+						collection = instance_variable_get("@#{object}").send(attribute.to_s)
+						if collection.size >= options[:max_size]
+							flash[:alert] = _("Can't add. This %s already has %d %s.") % [object, options[:max_size], attribute]
+						else
+							collection << child_model.find(params[:subcategory_id]) rescue flash[:alert] = _('%s already linked to this %s.') % [attribute.to_s.capitalize.singularize, object]
+						end
+						redirect_to :action => 'edit', :id => instance_variable_get("@#{object}")[:id]
+						# many_to_many_field(nil, object, attribute, options[:label], child_model.find_all, options[:m2m_field_options].merge(:controller => self))
+					end
+
+					define_method("remove_#{attribute.to_s.singularize}_from_#{object}") do
+						instance_variable_set("@#{object}", parent_model.find(params[:business_id]))
+						instance_variable_get("@#{object}").send(attribute).delete(child_model.find(params[:subcategory_id]))
+						redirect_to :action => 'edit', :id => instance_variable_get("@#{object}")[:id]
+						#raise many_to_many_field(nil, object, attribute, options[:label], child_model.find_all, options[:m2m_field_options].merge(:controller => self))
+					end
+				end
+			end
+		end
+	end
+end
+
+ActionController::Base.class_eval do
+	include ActionController::Macros::ManyToMany
+end
