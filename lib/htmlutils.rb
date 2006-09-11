@@ -40,13 +40,16 @@ EOT
 		end
 	end
 	
-	def fileinput_field(parent, opclass, spname, nodiv=false, value=nil, lang='en')
-		value = get_file_value(parent, opclass, spname) if value.nil?
+	def fileinput_field(parent, opclass, options={})
+		raise "'wrong options #{options.inspect}'" unless options.is_a?(Hash)
+		options = {:no_div => false, :value => nil, :lang => 'en'}.merge(options)
+		controller = parent.class.to_s.downcase.pluralize
+		spname = "#{controller.singularize}_#{opclass.to_s.downcase}"
+		options[:value] = get_file_value(parent, opclass, spname) if options[:value].nil?
 		id_name = "fileinput_field_#{spname}"
-		if value.kind_of?(opclass) and value[:id].to_i > 0
-			controller = parent.class.to_s.downcase.pluralize
+		if options[:value].kind_of?(opclass) and options[:value][:id].to_i > 0
 			url_hash = {:controller => controller, :action => 'kill_picture', :id => parent, :pic_class => Inflector.underscore(opclass)}
-			if lang=='en'
+			if options[:lang]=='en'
 			 link_text = 'Delete picture'
 			 confirm_text = 'Are you sure?'
 			 msg_text = 'To replace the picture, you need to delete this one first.'
@@ -56,12 +59,12 @@ EOT
 			 msg_text = ''
 			end
 			link = link_to_remote(link_text, :update => id_name, :url => url_hash, :confirm => confirm_text)
-			h = "<img src='#{value.thumbnail_path}' /><br/>#{link}<br/>#{msg_text}"
+			h = "<img src='#{options[:value].thumbnail_path}' /><br/>#{link}<br/>#{msg_text}"
 		else
-			t = "<br/><small>(jpeg, jpg, gif files of up to 3MB in size can be uploaded.)</small>" if lang=='en'
-			h = "<input type='file' name='#{spname}' />#{t}"
+			t = "<br/><small>(jpeg, jpg, gif files of up to 3MB in size can be uploaded.)</small>" if options[:lang]=='en'
+			h = "<input type='file' name='#{controller.singularize}[#{opclass.to_s.downcase}]' />#{t}"
 		end
-		if nodiv
+		if options[:no_div]
 			h
 		else
 			"<div id='#{id_name}'>#{h}</div>"
