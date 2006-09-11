@@ -20,7 +20,7 @@ module DebugSupport
 		val = params['local_request'].to_i
 		default = consider_all_requests_local ? 1 : 0
 		session['local_request'] ||= default
-		session['local_request'] = val if val.in? [1, 0]
+		session['local_request'] = val if val.in? [1, 0] unless params['local_request'].nil?
 	end 
 
 end
