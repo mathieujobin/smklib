@@ -71,14 +71,14 @@ class Builder::XmlMarkup
     return [im.columns, im.rows]
   end
 
-  def img(options = {})
-    if get_ua =~ /MSIE.*Windows/
-      if options["src"] =~ /\.png/
-        options["style"] = "filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='#{options["src"]}', sizingMethod='scale');" + options["style"].to_s
-        options["width"], options["height"] = get_img_size(options["src"]) unless options["width"] && options["height"]
-        options["src"] = "/images/spacer.gif"
-      end
-    end
+	def img(options = {})
+		if get_ua =~ /MSIE 6.*Windows/
+			if options[:src] =~ /\.png$/
+				options[:style] = "filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='#{options[:src]}', sizingMethod='scale');" + options[:style].to_s
+				options[:width], options[:height] = get_img_size(options[:src]) unless options[:width] && options[:height]
+				options[:src] = '/images/spacer.gif'
+			end
+		end
     if block_given?
       method_missing(:img, options, yield)
     else
