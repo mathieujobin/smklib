@@ -11,9 +11,13 @@ p { margin: 0 }
 <tr><td>Message</td><td><%= @v_exception.message %></td></tr>
 <% 
 	require 'uri'
-	uri_path, uri_query = @v_env['REQUEST_URI'].split('?')
+	request_uri = @v_env['REQUEST_URI'].match(@v_env['HTTP_HOST']) ? @v_env['REQUEST_URI'].split(@v_env['HTTP_HOST'])[1] : @v_env['REQUEST_URI']
+	uri_path, uri_query = request_uri.split('?')
 	uri_extra = 'local_request=1'
-	go_url = URI::HTTP.build(:host => @v_env['HTTP_HOST'], :path => uri_path, :query => uri_query.to_s.empty? ? uri_extra : "#{uri_query}&#{uri_extra}" )
+	host, port = @v_env['HTTP_HOST'].split(':')
+	go_url_hash = {:host => host, :path => uri_path, :query => uri_query.to_s.empty? ? uri_extra : "#{uri_query}&#{uri_extra}"}
+	go_url_hash.merge!(:port => port) if port.to_i > 0 and port.to_i != 80
+	go_url = URI::HTTP.build(go_url_hash)
 %>
 <tr><td>Location</td><td><a href='<%= go_url %>'><%= go_url %></a></td></tr>
 <tr><td>Client IP</td><td><%= @v_env['REMOTE_ADDR'] %><%= (@v_env['REMOTE_ADDR'] == "24.85.69.203") ? '&nbsp;UberOFFICE' : '' %></td></tr>
