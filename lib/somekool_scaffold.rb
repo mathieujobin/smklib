@@ -3,14 +3,7 @@
 # Usage:
 #
 # 	somekool_scaffold :agents, :ignore_columns => [:last_edit_at], :foreign_keys => [{:key => :sub_of_agent_id, :model => Agent, :title => _('Sub of')}], :css_class => :table_list_view
-
-# 	def set_agent_sub_of_agent_id
-# 	a = Agent.find(params[:id])
-# 		a[:sub_of_agent_id] = params[:value]
-# 		a.save
-# 		render :text => (a[:sub_of_agent_id].nil? ? _('NULL') : Agent.find(a[:sub_of_agent_id]).to_s)
-# 	end
-
+#
 #
 #
 #
@@ -73,8 +66,9 @@ class ActionController::Base
 			include ActionView::Helpers::JavaScriptMacrosHelper
 
 			# get model object
-			object_model = Object.const_get(model.to_s.singularize.capitalize)
-			model_sym = model.to_s.singularize.downcase.to_sym
+			model_sym = model.to_s.singularize
+			object_model = Object.const_get(model_sym.capitalize)
+			model_sym = model_sym.downcase.to_sym
 
 			# call in_plate_edit_for all columns
 			columns = object_model.content_columns.collect do |c|
@@ -87,6 +81,13 @@ class ActionController::Base
 			end.compact
 			options[:foreign_keys].each do |fk|
 				in_place_edit_for model_sym, fk[:key].to_sym
+
+				define_method("set_#{model_sym}_#{fk[:key]}".to_sym) do
+					a = object_model.find(params[:id])
+					a[fk[:key].to_sym] = params[:value]
+					a.save
+					render :text => (a[fk[:key].to_sym].nil? ? _('NULL') : fk[:model].find(a[fk[:key].to_sym]).to_s)
+				end
 			end
 
 			# simple action index
@@ -97,6 +98,10 @@ class ActionController::Base
 			# main action
 			define_method(:list) do
 				xml = Builder::XmlMarkup.new(:indent=>2)
+				xml.a(:class => "#{model_sym}_add_link", :href => "/#{model_sym.to_s.pluralize}/add") do
+					xml.img(:title => 'add_button', :alt => 'add_button', :border => 0, :src => '/smklib/images/add.png')
+					xml << _('Add new %s') % model_sym.to_s
+				end
 				xml.table(:cellpadding => 0, :cellspacing => 0, :border => 0, :class => "somekool_scaffold list #{model} #{options[:css_class]}") do
 					xml.tr do
 						columns.each do |c|
@@ -106,6 +111,7 @@ class ActionController::Base
 							fk[:collection] = ([[nil, _('NULL')]] + fk[:model].find_all.collect { |item| [item.id, item.to_s] }).inspect.gsub(/nil/, 'null')
 							xml.th fk[:title]
 						end if options[:foreign_keys]
+						xml.th { xml << _('Delete') } unless options[:no_delete]
 					end
 					object_model.find_all.each_with_index do |row, row_index|
 						instance_variable_set("@#{model_sym}", row)
@@ -128,21 +134,60 @@ class ActionController::Base
 								end
 								#xml.td fk[:model].find(:first, :conditions => ["#{fk[:key]} = ?", row[fk[:key]]]).inspect ## same
 							end if options[:foreign_keys]
+							xml.td do
+								xml.a(:class => "#{model_sym}_delete_link", :href => "/#{model_sym.to_s.pluralize}/destroy/#{row.id}") do
+									xml.img(:title => 'delete_button', :alt => 'delete_button', :border => 0, :src => '/smklib/images/trashcan_empty.png')
+								end
+							end unless options[:no_delete]
 						end
 					end
 				end
 				render :text => xml.target!, :layout => 'main'
 			end
-			#define_method(:new) do
-			#end
-			#define_method(:create) do
-			#end
+			define_method(:add) do
+				xml = Builder::XmlMarkup.new(:indent=>2)
+				xml.form(:action => "/#{model_sym.to_s.pluralize}/create") do
+					xml.table(:cellpadding => 0, :cellspacing => 0, :border => 0, :class => "somekool_scaffold add #{model} #{options[:css_class]}") do
+						columns.each do |c|
+							xml.tr do
+								xml.th { xml << c.human_name.to_s.nbsp}
+								xml.td { xml.input(:type => 'text', :name => "#{model_sym}[#{c.name}]") }
+							end
+						end
+						options[:foreign_keys].each do |fk|
+							fk[:collection] = ([[nil, _('NULL')]] + fk[:model].find_all.collect { |item| [item.id, item.to_s] })
+							xml.tr do
+								xml.th fk[:title]
+								xml.td do
+									xml.select(:name => "#{model_sym}[#{fk[:key]}]") do
+										fk[:collection].each do |opt|
+											xml.option(:value => opt[0]) { xml << opt[1] }
+										end
+									end
+								end
+							end
+						end if options[:foreign_keys]
+						xml.tr do
+							xml.td(:colspan => 2) { xml.input(:type => 'submit', :value => _('Add'))}
+						end
+					end
+				end
+				render :text => xml.target!, :layout => 'main'
+			end
+			define_method(:create) do
+				object_model.create(params[model_sym])
+				flash[:notice] = _('New %s created') % model_sym.to_s
+				redirect_to_path "/#{model_sym.to_s.pluralize}/list"
+			end
 			#define_method(:edit) do
 			#end
 			#define_method(:update) do
 			#end
-			#define_method(:destroy) do
-			#end
+			define_method(:destroy) do
+				object_model.find(params[:id]).destroy
+				flash[:notice] = _('%s %s has been destroyed') % [model_sym.to_s, params[:id].to_s]
+				redirect_to_path "/#{model_sym.to_s.pluralize}/list"
+			end
 		end
 	end
 end
