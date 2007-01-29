@@ -104,6 +104,7 @@ class ActionController::Base
 				end
 				xml.table(:cellpadding => 0, :cellspacing => 0, :border => 0, :class => "somekool_scaffold list #{model} #{options[:css_class]}") do
 					xml.tr do
+						xml.th _('ID') unless options[:no_id]
 						columns.each do |c|
 							xml.th { xml << c.human_name.to_s.nbsp}
 						end
@@ -116,6 +117,9 @@ class ActionController::Base
 					object_model.find_all.each_with_index do |row, row_index|
 						instance_variable_set("@#{model_sym}", row)
 						xml.tr(:class => row_index % 2 == 0 ? 'even' : 'odd') do
+							xml.td do
+								xml << instance_variable_get("@#{model_sym}")[:id].to_s
+							end unless options[:no_id]
 							columns.each do |c|
 								xml.td do
 									#xml << row.send(c.name)
