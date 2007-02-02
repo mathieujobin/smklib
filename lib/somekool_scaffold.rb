@@ -86,7 +86,7 @@ class ActionController::Base
 					a = object_model.find(params[:id])
 					a[fk[:key].to_sym] = params[:value]
 					a.save
-					render :text => (a[fk[:key].to_sym].nil? ? _('NULL') : fk[:model].find(a[fk[:key].to_sym]).to_s)
+					render :text => (a[fk[:key].to_sym].nil? ? _('NULL') : "#{a[fk[:key].to_sym]} - #{fk[:model].find(a[fk[:key].to_sym]).to_s}".nbsp)
 				end
 			end
 
@@ -129,7 +129,7 @@ class ActionController::Base
 							end
 							options[:foreign_keys].each do |fk|
 								begin
-									front_val = fk[:model].find(row[fk[:key]]).to_s
+									front_val = "#{row[fk[:key]]} - #{fk[:model].find(row[fk[:key]]).to_s}".nbsp
 								rescue
 									front_val = _('NULL')
 								end
