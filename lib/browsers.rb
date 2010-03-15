@@ -48,7 +48,7 @@ module SMKLib
 		end
 	
 		def user_agent
-			ua = request.env_table['HTTP_USER_AGENT']
+			ua = request.env['HTTP_USER_AGENT']
 			if ua.nil?
 				"31337_h4x0r"
 			elsif ua.match(/Opera/)
