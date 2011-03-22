@@ -432,7 +432,7 @@ EOC
 		end
 	end
 
-	def many_to_many_field(xml, object, method, label, all_values, options={})
+	def many_to_many_field(xml, object, method, parent_method, label, all_values, options={})
 		xml ||= Builder::XmlMarkup.new(:indent=>2)
 		#@controller = (@controller or options[:controller])
 		options = {:item_name => 'name', :m2m_selected => 'm2m_selected'}.merge(options)
@@ -455,9 +455,17 @@ EOC
 			#url = url_for({ :action => "add_#{method.to_s.singularize}_to_#{object}" })
 			#url += "/'+$('#{s}').options[$('#{s}').selectedIndex].value+'/to_#{object}/#{@object[:id]}"
 			#url = url_for({ :action => "add_#{method.singularize}_to_#{object}", parent_id => @object[:id].to_i, child_id => "'+$('#{s}').options[$('#{s}').selectedIndex].value+'", :escape => false })
-			url = url_for({ :action => "add_#{method.singularize}_to_#{object}", parent_id => @object[:id].to_i, child_id => "__js__" })
-			url.gsub!("__js__", "'+$('#{s}').options[$('#{s}').selectedIndex].value+'")
-			xml << text_and_select_field(nil, object, method, all_values, nil, :button_value => _('Add'), :field_only => true, :text_field_type => 'tag', :img_js => "window.location='#{url}';return false;")
+			url = url_for({ :action => "add_#{method.singularize}_to_#{object}", parent_id => @object[:id].to_i, child_id => "__js__", parent_method => "__js2__" })
+			if all_values.empty?
+				xml << "<input type='text' id='#{object}_#{parent_method}' />"
+				xml << text_field(object, method)
+				url.gsub!("__js__", "'+$('#{object}_#{method}').value+'")
+				url.gsub!("__js2__", "'+$('#{object}_#{parent_method}').value+'")
+				xml << "<input type='button' align='absmiddle' alt='' border='0' value='Add' onclick=\"window.location='#{url}';return false;\" />"
+			else
+				url.gsub!("__js__", "'+$('#{s}').options[$('#{s}').selectedIndex].value+'")
+				xml << text_and_select_field(nil, object, method, all_values, nil, :button_value => _('Add'), :field_only => true, :text_field_type => 'tag', :img_js => "window.location='#{url}';return false;")
+			end
 		end
 	end
 
@@ -553,7 +561,12 @@ module ActionController
 						if collection.size >= options[:max_size]
 							flash[:alert] = _("Can't add. This %s already has %d %s.") % [object, options[:max_size], attribute]
 						else
-							collection << child_model.find(params[:subcategory_id]) rescue flash[:alert] = _('%s already linked to this %s.') % [attribute.to_s.capitalize.singularize, object]
+							if params[:subcategory_id].to_i > 0
+								collection << child_model.find(params[:subcategory_id]) rescue flash[:alert] = _('%s already linked to this %s.') % [attribute.to_s.capitalize.singularize, object]
+							else
+								c = Category.find_or_create_by_name(params[:categories])
+								collection << child_model.find_or_create_by_name_and_category_id(params[:subcategory_id], c[:id])
+							end
 						end
 						redirect_to :action => 'edit', :id => instance_variable_get("@#{object}")[:id]
 						# many_to_many_field(nil, object, attribute, options[:label], child_model.find_all, options[:m2m_field_options].merge(:controller => self))
