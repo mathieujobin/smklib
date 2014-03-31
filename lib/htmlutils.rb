@@ -9,7 +9,7 @@ module HtmlUtils
 		# code should look like this UA-97533-1
     if RAILS_ENV == "production" and not(code.to_s.empty?)
       return <<EOT
-  <script src="http://www.google-analytics.com/urchin.js" type="text/javascript">
+  <script src="https://www.google-analytics.com/urchin.js" type="text/javascript">
   </script>
   <script type="text/javascript">
     _uacct = "#{code}";
@@ -191,7 +191,7 @@ EOC
 			google_color_text = "000000";
 			//--></script>
 			<script type="text/javascript"
-				src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+				src="https://pagead2.googlesyndication.com/pagead/show_ads.js">
 			</script>
 		</div>
 		'
@@ -212,7 +212,7 @@ EOC
 			google_color_text = "000000";
 			//--></script>
 			<script type="text/javascript"
-				src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+				src="https://pagead2.googlesyndication.com/pagead/show_ads.js">
 			</script>
 		</div>
 		'
@@ -233,7 +233,7 @@ EOC
 			google_color_text = "000000";
 			//--></script>
 			<script type="text/javascript"
-				src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+				src="https://pagead2.googlesyndication.com/pagead/show_ads.js">
 			</script>
 EOC
 		elsif orientation == "srosa"
@@ -250,7 +250,7 @@ EOC
 			google_color_url = "086582";
 			google_color_text = "333333";
 			//--></script> 
-			<script type="text/javascript" src="http://pagead2.googlesyndication.com/pagead/show_ads.js"></script> 
+			<script type="text/javascript" src="https://pagead2.googlesyndication.com/pagead/show_ads.js"></script> 
 EOC
 		else
 		'
@@ -278,10 +278,10 @@ EOC
 			var google_conversion_label = "Signup";
 		//-->
 		</script>
-		<script language="JavaScript" src="http://www.googleadservices.com/pagead/conversion.js">
+		<script language="JavaScript" src="https://www.googleadservices.com/pagead/conversion.js">
 		</script>
 		<noscript>
-			<img height=1 width=1 border=0 src="http://www.googleadservices.com/pagead/conversion/1068909979/?value=1.0&label=Signup&script=0">
+			<img height=1 width=1 border=0 src="https://www.googleadservices.com/pagead/conversion/1068909979/?value=1.0&label=Signup&script=0">
 		</noscript>
 		'
 		end
