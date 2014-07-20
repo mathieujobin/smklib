@@ -2,7 +2,7 @@ require File.expand_path('../lib/smklib/version', __FILE__)
 
 Gem::Specification.new do |s|
   s.name = 'smklib'
-  s.version = SMKLib::VERSION
+  s.version = SMKLib::VERSION::STRING
   s.platform = Gem::Platform::RUBY
 
   s.authors = ['Mathieu Jobin']
