@@ -262,8 +262,8 @@ EOC
 	end
 
 	def google_conversion_tracker_english
-		if @session['signup']
-			@session['signup'] = false
+		if session['signup']
+			session['signup'] = false
 		'
 		<br/>
 		<!-- Google Code for Signup Conversion Page -->
