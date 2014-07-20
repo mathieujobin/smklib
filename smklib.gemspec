@@ -2,7 +2,7 @@ require File.expand_path('../lib/smklib/version', __FILE__)
 
 Gem::Specification.new do |s|
   s.name = 'smklib'
-  s.version = SMKLib::VERSION::STRING
+  s.version = SMKLib::VERSION.to_s
   s.platform = Gem::Platform::RUBY
 
   s.authors = ['Mathieu Jobin']
@@ -19,4 +19,3 @@ Gem::Specification.new do |s|
   s.add_development_dependency 'rspec', '~> 2.12'
   s.add_development_dependency 'bundler'
 end
-
