@@ -1,3 +1,4 @@
+# encoding: UTF-8
 #require 'timezone'
 #require 'rmagick'
 
@@ -39,7 +40,7 @@ EOT
 			opclass.find(:first, :conditions => ["properties_id = ? and htmlname = ?", ref_id, spname])
 		end
 	end
-	
+
 	def fileinput_field(parent, opclass, options={})
 		raise "'wrong options #{options.inspect}'" unless options.is_a?(Hash)
 		options = {:no_div => false, :value => nil, :lang => 'en'}.merge(options)
@@ -122,7 +123,7 @@ EOC
 		id = "#{object}_#{method}"
 		code = <<EOC
 				<div style="float: right; margin-left: 1em; margin-bottom: 1em;" id="calendar-container"></div>
-				
+
 				<script type="text/javascript">
 					Calendar.setup(
 						{
@@ -140,7 +141,7 @@ EOC
 		hidden_field(object, method) + code
 	end
 
-	
+
 	def get_img_size(filename)
 		#im = Magick::Image.read(real_filename(filename)).first
 		#return [im.columns, im.rows]
@@ -249,8 +250,8 @@ EOC
 			google_color_link = "086582";
 			google_color_url = "086582";
 			google_color_text = "333333";
-			//--></script> 
-			<script type="text/javascript" src="https://pagead2.googlesyndication.com/pagead/show_ads.js"></script> 
+			//--></script>
+			<script type="text/javascript" src="https://pagead2.googlesyndication.com/pagead/show_ads.js"></script>
 EOC
 		else
 		'
