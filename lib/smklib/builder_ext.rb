@@ -31,22 +31,22 @@ class Builder::XmlMarkup
   class << self
     attr_accessor :environment
   end
-  
+
   def get_ua
     env = ENV
     env = Builder::XmlMarkup.environment if Builder::XmlMarkup.environment
     env['HTTP_USER_AGENT']
   end
-  
+
   def tight_table(options = {})
     table({ "cellspacing" => 0, "cellpadding" => 0, "border" => 0 }.merge(options)) { yield }
   end
- 
+
   #cells is an array of objects that respond to to_s
   def table_row(cells, tr_options = {}, td_options = {})
     tr(tr_options) { cells.each_with_index { |i,k| td(td_options[k] || {}) { self << i.to_s } } }
   end
-  
+
   def sortable_column_header(label, link, options = {})
     #th({"x" => "y"}.merge(options)) do
     th(options) do
@@ -85,7 +85,7 @@ class Builder::XmlMarkup
       method_missing(:img, options)
     end
   end
-  
+
   def nbsp(count=1)
     self << (1..count).collect{ "&nbsp;" }.join
   end
