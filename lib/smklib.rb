@@ -1,4 +1,6 @@
 module SMKLib
-	require 'smklib/railtie' if defined?(Rails)
+	if defined?(::Rails)
+		require 'smklib/railtie'
+		class Engine < ::Rails::Engine; end
+	end
 end
-

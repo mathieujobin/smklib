@@ -10,12 +10,9 @@ Gem::Specification.new do |s|
   s.summary = "smklib is somekool's ruby library..."
   s.homepage = 'https://bitbucket.org/somekool/smklib'
 
-  s.files = Dir['lib/**/*'] + Dir['vendor/**/*']
+  s.files = Dir['{app,lib,vendor}/**/*']
   #s.test_files = Dir['spec/**/*']
   s.require_paths = ['lib', 'vendor']
 
-  s.add_dependency 'rake'
-  s.add_development_dependency 'aruba', '~> 0.5.1'
-  s.add_development_dependency 'rspec', '~> 2.12'
-  s.add_development_dependency 'bundler'
+  s.add_dependency 'railties'
 end
