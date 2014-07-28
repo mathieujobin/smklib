@@ -5,7 +5,7 @@ class Builder::XmlMarkup
 
 	# Builder Transaction ...
 
-	class AbortTransaction < RuntimeError; end
+	class AbortTransaction < ::RuntimeError; end
 
 	def transaction!(&block)
 		old_target = @target
