@@ -302,7 +302,7 @@ EOC
 		f_n = "#{flash[:notice]}#{flash['notice']}#{flash[:message]}#{flash['message']}"
 		unless f_n.empty?
 			s += '<div class="flash notice_content">'
-			s += img_tag(:src => "/smklib/images/button_ok.png")
+			s += img_tag(:src => image_path("button_ok.png"))
 			s += '<span>'
 			s += f_n
 			#s += '<br/>' + google_conversion_tracker_english if @flash['signup']
@@ -313,7 +313,7 @@ EOC
 		f_a = "#{flash[:warning]}#{flash['warning']}#{flash[:alert]}#{flash['alert']}"
 		unless f_a.empty?
 			s += '<div class="flash error_content">'
-			s += img_tag(:src => "/smklib/images/button_cancel.png")
+			s += img_tag(:src => image_path("button_cancel.png"))
 			s += '<span>'
 			s += f_a
 			s += '</span>'
