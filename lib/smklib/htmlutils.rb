@@ -116,7 +116,7 @@ EOT
 EOC
 		#js = 'return showCalendar("#{id}", "%Y-%m-%d [%W] %H:%M", "24", true);'
 		#"#{text_field(object, method, :size => 30)}<input type='reset' value='...' onclick='#{js}'>"
-		hidden_field(object, method) + code
+		hidden_field(object, method) + code.html_safe
 	end
 
 	def datetime_select_flat(object, method, options = {})
@@ -340,6 +340,19 @@ EOC
 	def select_timezone(object, method)
 		select object, method, Timezone.find_all.collect {|p| [ p.first, p.last ] }, { :include_blank => true }
 	end
+
+  # File actionpack/lib/action_view/helpers/date_helper.rb, line 238
+  def select_html(type, options, prefix = nil, include_blank = false, discard_type = false, disabled = false)
+    select_html  = %(<select name="#{prefix || 'date'})
+    select_html << "[#{type}]" unless discard_type
+    select_html << %(")
+    select_html << %( disabled="disabled") if disabled
+    select_html << %(>\n)
+    select_html << %(<option value=""></option>\n) if include_blank
+    select_html << options.to_s
+    select_html << "</select>\n"
+    select_html.html_safe
+  end
 
 	def my_select_day(date, select_name, options = {})
 		day_options = []
