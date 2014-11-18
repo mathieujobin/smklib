@@ -116,7 +116,7 @@ EOT
 EOC
 		#js = 'return showCalendar("#{id}", "%Y-%m-%d [%W] %H:%M", "24", true);'
 		#"#{text_field(object, method, :size => 30)}<input type='reset' value='...' onclick='#{js}'>"
-		hidden_field(object, method) + code
+		hidden_field(object, method) + code.html_safe
 	end
 
 	def datetime_select_flat(object, method, options = {})
@@ -138,7 +138,7 @@ EOC
 					);
 				</script>
 EOC
-		hidden_field(object, method) + code
+		hidden_field(object, method) + code.html_safe
 	end
 
 
@@ -407,7 +407,7 @@ EOC
 				xml << options[:extra]
 			end unless options[:extra].to_s.empty?
 			xml.target!
-		end
+		end.html_safe
 	end
 
 	def normal_field(xml, object, method, label, type='text_field')
