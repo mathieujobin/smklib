@@ -289,6 +289,7 @@ EOC
 	end
 
 	def display_errors
+		return '' if flash.class == String # flash got broken by render_component.
 		s = ""
 		css = "
       <style>
@@ -299,7 +300,7 @@ EOC
       </style>
     "
 		# s += '<pre>--' + flash.to_yaml + '<br/> -- ' + @flash.to_yaml + '<br/> -- </pre>' if local_request?
-		f_n = "#{flash[:notice]}#{flash['notice']}#{flash[:message]}#{flash['message']}"
+		f_n = [flash[:notice], flash['notice'], flash[:message], flash['message']].compact.sort.uniq.join(' ')
 		unless f_n.empty?
 			s += '<div class="flash notice_content">'
 			s += img_tag(:src => image_path("button_ok.png"))
@@ -310,7 +311,7 @@ EOC
 			s += '</div>'
 			s += '<div>&nbsp;</div>' # unless s.empty?
 		end
-		f_a = "#{flash[:warning]}#{flash['warning']}#{flash[:alert]}#{flash['alert']}"
+		f_a = [flash[:warning], flash['warning'], flash[:alert], flash['alert']].compact.sort.uniq.join(' ')
 		unless f_a.empty?
 			s += '<div class="flash error_content">'
 			s += img_tag(:src => image_path("button_cancel.png"))
@@ -339,6 +340,19 @@ EOC
 	def select_timezone(object, method)
 		select object, method, Timezone.find_all.collect {|p| [ p.first, p.last ] }, { :include_blank => true }
 	end
+
+  # File actionpack/lib/action_view/helpers/date_helper.rb, line 238
+  def select_html(type, options, prefix = nil, include_blank = false, discard_type = false, disabled = false)
+    select_html  = %(<select name="#{prefix || 'date'})
+    select_html << "[#{type}]" unless discard_type
+    select_html << %(")
+    select_html << %( disabled="disabled") if disabled
+    select_html << %(>\n)
+    select_html << %(<option value=""></option>\n) if include_blank
+    select_html << options.to_s
+    select_html << "</select>\n"
+    select_html.html_safe
+  end
 
 	def my_select_day(date, select_name, options = {})
 		day_options = []
