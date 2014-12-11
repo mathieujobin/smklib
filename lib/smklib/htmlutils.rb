@@ -138,7 +138,7 @@ EOC
 					);
 				</script>
 EOC
-		hidden_field(object, method) + code
+		hidden_field(object, method) + code.html_safe
 	end
 
 
@@ -421,7 +421,7 @@ EOC
 				xml << options[:extra]
 			end unless options[:extra].to_s.empty?
 			xml.target!
-		end
+		end.html_safe
 	end
 
 	def normal_field(xml, object, method, label, type='text_field')
