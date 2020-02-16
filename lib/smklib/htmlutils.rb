@@ -299,19 +299,17 @@ EOC
         .flash.notice_content { border-color: green; }
       </style>
     "
-		# s += '<pre>--' + flash.to_yaml + '<br/> -- ' + @flash.to_yaml + '<br/> -- </pre>' if local_request?
-		f_n = [flash[:notice], flash['notice'], flash[:message], flash['message']].compact.sort.uniq.join(' ')
+		f_n = [flash[:notice], flash[:message]].compact.sort.uniq.join(' ')
 		unless f_n.empty?
 			s += '<div class="flash notice_content">'
 			s += img_tag(:src => image_path("button_ok.png"))
 			s += '<span>'
 			s += f_n
-			#s += '<br/>' + google_conversion_tracker_english if @flash['signup']
 			s += '</span>'
 			s += '</div>'
 			s += '<div>&nbsp;</div>' # unless s.empty?
 		end
-		f_a = [flash[:warning], flash['warning'], flash[:alert], flash['alert']].compact.sort.uniq.join(' ')
+		f_a = [flash[:warning], flash[:alert]].compact.sort.uniq.join(' ')
 		unless f_a.empty?
 			s += '<div class="flash error_content">'
 			s += img_tag(:src => image_path("button_cancel.png"))
