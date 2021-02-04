@@ -290,7 +290,6 @@ EOC
 
 	def display_errors
 		return '' if flash.class == String # flash got broken by render_component.
-		flash = flash.to_h.symbolize_keys
 		s = ""
 		css = "
       <style>
