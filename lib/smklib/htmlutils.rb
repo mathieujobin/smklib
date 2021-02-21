@@ -76,14 +76,6 @@ EOT
 		"<form id='my_f' style='display: inline; margin: 0px; padding: 0px;' action='#{action}' method='post'>" + content + '</form>'
 	end
 
-  begin
-    do_nothing = true if Locale.is_a?(Class)
-  rescue
-    def _(str)
-      str
-    end
-	end
-
 	def datetime_select(object, method, start_date=Time.now.strftime("%Y, %m, %d, %H, %M"), options = {})
 		raise "dont use me you bastard."
 	#	datetime_select_popup(object, method, start_date, options)
